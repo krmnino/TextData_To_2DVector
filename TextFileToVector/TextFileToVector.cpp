@@ -8,7 +8,9 @@
 
 using namespace std;
 
-vector<int> data_dimensions(ifstream &file, char delimiter) {
+vector<int> data_dimensions(string file_name, char delimiter) {
+	ifstream file;
+	file.open(file_name);
 	vector<int> dimensions;
 	dimensions.resize(2, 0); //dimensions[0] = rows; dimenstions[1] = columns 
 	string str_delimiter;
@@ -29,70 +31,75 @@ vector<int> data_dimensions(ifstream &file, char delimiter) {
 			dimensions[1] = elements;
 		dimensions[0]++;
 	}
+	file.close();
 	return dimensions;
 }
 
-vector<int> parse_row(string data, char delimiter) {
+vector<vector<int>> parse_file(string file_name, vector<int> dimensions, char delimiter) {
+	vector<vector<int>> data;
+	data.resize(dimensions[0], vector<int>(dimensions[1], 0));
+	ifstream file;
+	file.open(file_name);
+	string str_row;
 	string str_delimiter;
 	str_delimiter += delimiter;
-	vector<int> row;
-	int length = data.size();
-	if (data.at(0) == ' ') {
-		int offset = 0;
-		for (offset = 0; offset < (signed)data.length(); offset++) {
-			if (isdigit(data.at(offset)))
-				break;
-		}
-		data = data.substr(offset, data.length());
-	}
-	int index_end = data.find(str_delimiter);
-	int elements = 0;
-	while (true) {
-		row.push_back(stoi(data.substr(0, index_end)));
-		if (index_end != -1) {
-			int offset = 0;
+	int n_rows = 0;
+	while (getline(file, str_row)) {
+		int index_end = str_row.find(str_delimiter);
+		int index_str_row = 0;
+		int n_cols = 0;
+		while (n_cols < dimensions[1]) {
+			string element = str_row.substr(0, index_end);
 			bool digits_remaining = false;
-			for (int j = index_end; j < (signed)data.length(); j++) {
-				if (isdigit(data.at(j))) {
+			if (element.length() != 0) 
+				data[n_rows][n_cols] = stoi(element);
+			for (int i = index_end; i < str_row.length(); i++) {
+				if (isdigit(str_row.at(i))) {
 					digits_remaining = true;
 					break;
 				}
 			}
-			if (!digits_remaining)
-				break;
-			else {
-				while (data.at(index_end + 1 + offset) == delimiter)
-					offset++;
-				data = data.substr(index_end + offset + 1, data.length());
-				index_end = data.find(str_delimiter);
-				elements++;
+			if (digits_remaining) {
+				str_row = str_row.substr(index_end + 1, str_row.length());
+				index_end = str_row.find(str_delimiter);
+				n_cols++;
 			}
+			else
+				break;
 		}
-		else
-			break;
+		n_rows++;
 	}
-	return row;
+	file.close();
+	return data;
+}
+
+vector<int> get_single_column(vector<vector<int>> data, int column) {
+	vector<int> column_data;
+	for (int i = 0; i < (signed)data.size(); i++) 
+		column_data.push_back(data[i][column]);
+	return column_data;
+}
+
+vector<int> get_single_row(vector<vector<int>> data, int row) {
+	return data[row];
+}
+
+void display_data(vector<vector<int>> data) {
+	for (int i = 0; i < (signed)data.size(); i++) {
+		for (int j = 0; j < (signed)data[i].size(); j++)
+			cout << to_string(data[i][j]) << " ";
+		if (i != (signed)data.size() - 1)
+			cout << endl;
+	}
 }
 
 int main()
 {
-	ifstream file;
-	file.open("test.txt"); //Type your file's name between the parenthesis
+	char delimiter = ','; //Change delimiter if different in raw data file
+	string file_name = "test.txt"; //Type your file's name between the parenthesis
 	vector<vector<int>> data;
-	vector<int> dim = data_dimensions(file, ',');
-	cout << dim[0] << ", " << dim[1] << endl;
-	file.close();
-	/*
-	string out = "";
-	for (int i = 0; i < (signed)data.size(); i++) {
-		for (int j = 0; j < (signed)data[i].size(); j++)
-			out += to_string(data[i][j]) + " ";
-		if (i != (signed)data.size() - 1)
-			out += "\n";
-	}
-	cout << out << endl;
-	*/
-
+	data = parse_file(file_name, data_dimensions(file_name, delimiter), delimiter);
+	display_data(data);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
