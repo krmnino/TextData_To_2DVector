@@ -8,6 +8,30 @@
 
 using namespace std;
 
+vector<int> data_dimensions(ifstream &file, char delimiter) {
+	vector<int> dimensions;
+	dimensions.resize(2, 0); //dimensions[0] = rows; dimenstions[1] = columns 
+	string str_delimiter;
+	str_delimiter += delimiter;
+	string str_row;
+	while (getline(file, str_row)) {
+		int delim_pos = str_row.find(str_delimiter);
+		int elements = 0;
+		if (str_row.length() != 0) {
+			while (delim_pos != -1) {
+				str_row = str_row.substr(delim_pos + 1, str_row.length());
+				delim_pos = str_row.find(str_delimiter);
+				elements++;
+			}
+			elements++;
+		}
+		if (elements > dimensions[1])
+			dimensions[1] = elements;
+		dimensions[0]++;
+	}
+	return dimensions;
+}
+
 vector<int> parse_row(string data, char delimiter) {
 	string str_delimiter;
 	str_delimiter += delimiter;
@@ -54,11 +78,11 @@ int main()
 {
 	ifstream file;
 	file.open("test.txt"); //Type your file's name between the parenthesis
-	string line;
 	vector<vector<int>> data;
-	while (getline(file, line))
-		data.push_back(parse_row(line, ' '));
+	vector<int> dim = data_dimensions(file, ',');
+	cout << dim[0] << ", " << dim[1] << endl;
 	file.close();
+	/*
 	string out = "";
 	for (int i = 0; i < (signed)data.size(); i++) {
 		for (int j = 0; j < (signed)data[i].size(); j++)
@@ -67,6 +91,7 @@ int main()
 			out += "\n";
 	}
 	cout << out << endl;
+	*/
 
 }
 
