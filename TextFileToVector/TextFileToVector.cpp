@@ -93,8 +93,17 @@ void display_data(vector<vector<int>> data) {
 	}
 }
 
-int main()
-{
+vector<int> extract_rows(int from, int to) {
+	vector<int> out;
+	return out;
+}
+
+vector<int> extract_columns(int from, int to) {
+	vector<int> out;
+	return out;
+}
+
+int main() {
 	char delimiter = ','; //Change delimiter if different in raw data file
 	string file_name = "test.txt"; //Type your file's name between the parenthesis
 	vector<vector<int>> data;
