@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include <assert.h>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -84,6 +85,39 @@ vector<int> get_single_row(vector<vector<int>> data, int row) {
 	return data[row];
 }
 
+vector<vector<int>> get_rows(vector<vector<int>> &data, int from, int to) {
+	assert(0 <= from && from < to && to < data.size());
+	vector<vector<int>> out;
+	for (int i = from; i < to; i++) 
+		out.push_back(data[i]);
+	return out;
+}
+
+vector<vector<int>> get_columns(vector<vector<int>> &data, int from, int to) {
+	assert(0 <= from && from < to && to < data[0].size());
+	vector<vector<int>> out;
+	for (int i = 0; i < data.size(); i++) {
+		vector<int> row;
+		for (int j = from; j < to; j++)
+			row.push_back(data[i][j]);
+		out.push_back(row);
+	}
+	return out;
+}
+
+void save_txt(vector<vector<int>>& data, string delimiter, string name) {
+	ofstream out_file;
+	out_file.open(name);
+	for (int i = 0; i < data.size(); i++) {
+		for (int j = 0; j < data[0].size(); j++) {
+			if (j == data[0].size() - 1) 
+				out_file << to_string(data[i][j]) + "\n";
+			else 
+				out_file << to_string(data[i][j]) + delimiter;
+		}
+	}
+}
+
 void display_data(vector<vector<int>> data) {
 	for (int i = 0; i < (signed)data.size(); i++) {
 		for (int j = 0; j < (signed)data[i].size(); j++)
@@ -91,15 +125,19 @@ void display_data(vector<vector<int>> data) {
 		if (i != (signed)data.size() - 1)
 			cout << endl;
 	}
+	cout << endl;
 }
 
-int main()
-{
+int main() {
 	char delimiter = ','; //Change delimiter if different in raw data file
-	string file_name = "test.txt"; //Type your file's name between the parenthesis
+	string file_name = "out1.dat"; //Type your file's name between the parenthesis
 	vector<vector<int>> data;
 	data = parse_file(file_name, data_dimensions(file_name, delimiter), delimiter);
 	display_data(data);
+	cout << endl;
+	//vector<vector<int>> ex1 = get_columns(data, 2, 5);
+	//display_data(ex1);
+	//save_txt(ex1, ",", "out1.dat");
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
