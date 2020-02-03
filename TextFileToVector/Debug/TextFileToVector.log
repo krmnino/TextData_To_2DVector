@@ -1,3 +1,0 @@
-﻿  TextFileToVector.cpp
-D:\workspaces\visual_studio_workspace\TextFileToVector\TextFileToVector\TextFileToVector.cpp(56,30): warning C4018:  '<': signed/unsigned mismatch
-  TextFileToVector.vcxproj -> D:\workspaces\visual_studio_workspace\TextFileToVector\Debug\TextFileToVector.exe

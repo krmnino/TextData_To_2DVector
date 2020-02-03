@@ -1,6 +1,3 @@
-// TextFileToVector.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
 #include <assert.h>
 #include <fstream>
@@ -9,7 +6,7 @@
 
 using namespace std;
 
-vector<int> data_dimensions(string file_name, char delimiter) {
+vector<int> data_dimensions(string file_name, string delimiter) {
 	ifstream file;
 	file.open(file_name);
 	vector<int> dimensions;
@@ -36,7 +33,7 @@ vector<int> data_dimensions(string file_name, char delimiter) {
 	return dimensions;
 }
 
-vector<vector<int>> parse_file(string file_name, vector<int> dimensions, char delimiter) {
+vector<vector<int>> parse_file(string file_name, vector<int> dimensions, string delimiter) {
 	vector<vector<int>> data;
 	data.resize(dimensions[0], vector<int>(dimensions[1], 0));
 	ifstream file;
@@ -47,7 +44,6 @@ vector<vector<int>> parse_file(string file_name, vector<int> dimensions, char de
 	int n_rows = 0;
 	while (getline(file, str_row)) {
 		int index_end = str_row.find(str_delimiter);
-		int index_str_row = 0;
 		int n_cols = 0;
 		while (n_cols < dimensions[1]) {
 			string element = str_row.substr(0, index_end);
@@ -105,7 +101,7 @@ vector<vector<int>> get_columns(vector<vector<int>> &data, int from, int to) {
 	return out;
 }
 
-void save_txt(vector<vector<int>>& data, string delimiter, string name) {
+void save_txt(vector<vector<int>> data, string delimiter, string name) {
 	ofstream out_file;
 	out_file.open(name);
 	for (int i = 0; i < data.size(); i++) {
@@ -128,25 +124,76 @@ void display_data(vector<vector<int>> data) {
 	cout << endl;
 }
 
-int main() {
-	char delimiter = ','; //Change delimiter if different in raw data file
-	string file_name = "out1.dat"; //Type your file's name between the parenthesis
-	vector<vector<int>> data;
-	data = parse_file(file_name, data_dimensions(file_name, delimiter), delimiter);
-	display_data(data);
-	cout << endl;
-	//vector<vector<int>> ex1 = get_columns(data, 2, 5);
-	//display_data(ex1);
-	//save_txt(ex1, ",", "out1.dat");
+void display_usage() {
+	
+	cout << "Usage:		[action] [shape] [from] [to] [delimiter] [in_file] [out_file] " << endl;
+	cout << "		-v <in_file>" << endl;
+	cout << "		-d -r|-c <INT> <INT> <delim> <in_file> <out_file>" << endl;
+	cout << "		-e -r|-c <INT> <INT> <delim> <in_file> <out_file>\n" << endl;
+	cout << "action:	-v: view text file in terminal" << endl;
+	cout << "		-d: display..." << endl;
+	cout << "		-e: extract...\n" << endl;
+	cout << "shape:		-r: rows" << endl;
+	cout << "		-c: columns\n" << endl;
+	cout << "from:		select rows/columns from index (inclusive)\n" << endl;
+	cout << "to:		select rows/columns to index (exclusive)\n" << endl;
+	cout << "in_file:	name of the file where data is read from (include extension)\n" << endl;
+	cout << "out_file:	name of the file where dara is written to\n" << endl;
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+int main(int argc, char *argv[]) {
+	if (argc != 4 && argc != 6 && argc != 8) {
+		display_usage();
+		exit(EXIT_FAILURE);
+	}
+	string flag = argv[1];
+	if (flag == "-v") {
+		string delimiter = argv[2];
+		string file_name = argv[3];
+		display_data(parse_file(file_name, data_dimensions(file_name, delimiter), delimiter));
+	}
+	else if (flag == "-d") {
+		flag = argv[2];
+		if (flag == "-r") {
+			string delimiter = argv[5];
+			string file_name = argv[6];
+			vector<vector<int>> data = parse_file(file_name, data_dimensions(file_name, delimiter), delimiter);
+			display_data(get_rows(data, stoi(argv[3]), stoi(argv[4])));
+		}
+		else if (flag == "-c") {
+			string delimiter = argv[5];
+			string file_name = argv[6];
+			vector<vector<int>> data = parse_file(file_name, data_dimensions(file_name, delimiter), delimiter);
+			display_data(get_columns(data, stoi(argv[3]), stoi(argv[4])));
+		}
+		else {
+			display_usage();
+			exit(EXIT_FAILURE);
+		}
+	}
+	else if (flag == "-e") {
+		flag = argv[2];
+		if (flag == "-r") {
+			string delimiter = argv[5];
+			string file_name = argv[6];
+			string out_file = argv[7];
+			vector<vector<int>> data = parse_file(file_name, data_dimensions(file_name, delimiter), delimiter);
+			save_txt(get_rows(data, stoi(argv[3]), stoi(argv[4])), delimiter, out_file);
+		}
+		else if (flag == "-c") {
+			string delimiter = argv[5];
+			string file_name = argv[6];
+			string out_file = argv[7];
+			vector<vector<int>> data = parse_file(file_name, data_dimensions(file_name, delimiter), delimiter);
+			save_txt(get_columns(data, stoi(argv[3]), stoi(argv[4])), delimiter, out_file);
+		}
+		else {
+			display_usage();
+			exit(EXIT_FAILURE);
+		}
+	}
+	else {
+		display_usage();
+		exit(EXIT_FAILURE);
+	}
+}
