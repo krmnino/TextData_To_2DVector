@@ -126,7 +126,7 @@ void display_data(vector<vector<int>> data) {
 
 void display_usage() {
 	
-	cout << "Usage:		[action] [shape] [from] [to] [delimiter] [in_file] [out_file] " << endl;
+	cout << "Usage:		text_to_matrix.exe [action] [shape] [from] [to] [delimiter] [in_file] [out_file] " << endl;
 	cout << "		-v <in_file>" << endl;
 	cout << "		-d -r|-c <INT> <INT> <delim> <in_file> <out_file>" << endl;
 	cout << "		-e -r|-c <INT> <INT> <delim> <in_file> <out_file>\n" << endl;
